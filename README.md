@@ -1,50 +1,90 @@
-# infra
+EODI Infrastructure Repository
 
-이 디렉터리는 **로컬(Local) / 개발(Dev) / 운영(Prod)** 환경에서  
-서비스 실행에 필요한 **인프라 구성 요소를 일관되게 관리**하기 위한 디렉터리입니다.
+이 레포지토리는 EODI 서비스의 인프라 구성을 관리합니다.
+Docker Compose 기반으로 로컬(Local) 과 운영(Prod) 환경을 디렉터리 단위로 분리하여 관리합니다.
 
-애플리케이션 코드와 인프라 설정을 분리하여 다음을 목표로 합니다.
+브랜치 전략: main 단일 브랜치
 
-- 환경 간 차이를 최소화한 실행 환경 제공
-- Docker 기반 재현 가능한 인프라 구성
-- 데이터베이스 스키마 및 초기화 로직의 명확한 관리
-- 로컬 → 개발 → 운영 환경으로의 자연스러운 확장
+환경 구분: 디렉터리(local / prod)
 
----
+배포 방식: Docker Compose (수동 또는 Git 기반 반자동)
 
-```text
-infra
-├── common
-│   ├── env
-│   │   ├── app.env              # 애플리케이션 공통 환경 변수
-│   │   └── db.env               # DB 공통 환경 변수
-│   │
-│   └── mysql
-│       ├── init-scripts
-│       │   └── init.sql         # MySQL 초기 DB / 계정 / 권한 설정
-│       └── schema               # 도메인별 스키마 정의 (DDL)
-│           ├── address
-│           ├── deal
-│           ├── integration
-│           ├── legal_dong
-│           └── spring_batch
+```
+eodi-infra
+├─ local/                         # 로컬 개발 환경
+│  ├─ app/
+│  │  ├─ nginx/
+│  │  │  └─ nginx.conf            # 로컬용 Nginx 설정
+│  │  ├─ app.env                  # 애플리케이션 환경변수 (로컬)
+│  │  ├─ web.env                  # 웹(frontend) 환경변수
+│  │  └─ docker-compose.yml       # App/Web/Nginx compose
+│  │
+│  ├─ db/
+│  │  ├─ compose/
+│  │  │  └─ docker-compose.yml    # MySQL compose
+│  │  ├─ mysql/
+│  │  │  └─ init-scripts/
+│  │  │     └─ init.sql           # 초기 DB 생성 스크립트
+│  │  └─ schema/
+│  │     ├─ address/
+│  │     │  ├─ land_lot_address.sql
+│  │     │  ├─ road_name_address.sql
+│  │     │  └─ unmapped.sql
+│  │     ├─ deal/
+│  │     │  ├─ real_estate_lease.sql
+│  │     │  └─ real_estate_sell.sql
+│  │     ├─ legal_dong/
+│  │     │  ├─ legal_dong.sql
+│  │     │  └─ legal_dong_adjacency.sql
+│  │     ├─ spring_batch/
+│  │     └─ schema-mysql.sql
+│  │
+│  ├─ .env                        # 로컬 공통 환경변수 (gitignore)
+│  └─ resource/
+│     ├─ init-network-mac.sh      # 로컬 Docker 네트워크 초기화 (mac)
+│     └─ init-volume-mac.sh       # 로컬 Docker 볼륨 초기화 (mac)
 │
-├── local
-│   ├── nginx
-│   │   └── nginx.conf           # 로컬 환경용 Nginx 설정
-│   ├── docker-compose.yml       # 로컬 인프라 구성
-│   └── README.md
+├─ prod/                          # 운영(PROD) 환경
+│  ├─ app/
+│  │  ├─ docker/
+│  │  ├─ nginx/
+│  │  │  └─ nginx.conf            # 운영용 Nginx 설정
+│  │  ├─ init-scripts/
+│  │  ├─ docker-compose.yml       # 운영 App/Web compose
+│  │
+│  ├─ db/
+│  │  ├─ compose/
+│  │  │  └─ docker-compose.yml    # 운영 DB compose
+│  │  ├─ mysql/
+│  │  │  └─ init-scripts/
+│  │  │     ├─ 00-init.sql        # DB/계정 초기화
+│  │  │     └─ 10-schema.sql      # 기본 스키마
+│  │  ├─ init-db.sh               # DB 초기화 스크립트
+│  │  └─ schema/
+│  │     ├─ address/
+│  │     │  ├─ land_lot_address.sql
+│  │     │  ├─ road_name_address.sql
+│  │     │  └─ unmapped.sql
+│  │     ├─ deal/
+│  │     │  ├─ real_estate_lease.sql
+│  │     │  └─ real_estate_sell.sql
+│  │     ├─ legal_dong/
+│  │     │  ├─ legal_dong.sql
+│  │     │  └─ legal_dong_adjacency.sql
+│  │     ├─ spring_batch/
+│  │     └─ schema-mysql.sql
 │
-├── dev
-│   ├── nginx
-│   │   └── nginx.conf           # 개발 환경용 Nginx 설정
-│   ├── docker-compose.yml       # 개발 인프라 구성
-│   └── README.md
+├─ resource/
+│  └─ init-network.sh             # 운영 Docker 네트워크 초기화
 │
-├── prod
-│   ├── nginx
-│   │   └── nginx.conf           # 운영 환경용 Nginx 설정
-│   ├── docker-compose.yml       # 운영 인프라 구성
-│   └── README.md
-│
-└── README.md
+├─ .gitignore
+└─ README.md
+```
+
+Notes
+
+DB 스키마 및 대용량 초기 데이터는 schema/ 디렉터리에서 관리
+
+로컬과 운영의 구조는 최대한 동일하게 유지
+
+운영 환경은 EBS 기반 볼륨 마운트를 전제로 설계됨
