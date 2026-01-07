@@ -1,0 +1,47 @@
+name: Deploy prod Infra Definitions
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "prod/app/**"
+
+permissions:
+  id-token: write # OIDC 필수
+  contents: read
+
+env:
+  AWS_REGION: ap-northeast-2
+  AWS_IAM_ROLE: arn:aws:iam::265507129563:role/role-github-actions-eodi
+
+jobs:
+  deploy-prod-infra:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (for history)
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials - OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync prod infra to server
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets \
+              "Key=tag:project,Values=eodi" \
+              "Key=tag:phase,Values=prod" \
+              "Key=tag:role,Values=app" \
+            --comment "Deploy prod infra definitions" \
+            --parameters '{
+              "commands": [
+                "set -e",
+                "cd /opt/eodi/infra",
+                "git fetch origin",
+                "git reset --hard origin/main"
+              ]
+            }'
