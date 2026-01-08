@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:alpine
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    networks:
+      - eodi-frontend-net
+    ports:
+      - "80:80"
+    volumes:
+      - /opt/eodi/infra/prod/app/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: always
+    mem_limit: 128m
+
+networks:
+  eodi-frontend-net:
+    external: true

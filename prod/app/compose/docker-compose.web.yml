@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  web:
+    image: 265507129563.dkr.ecr.ap-northeast-2.amazonaws.com/eodi-web:${EODI_WEB_TAG}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    networks:
+      - eodi-frontend-net
+    mem_limit: 256m
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=256
+
+networks:
+  eodi-frontend-net:
+    external: true

@@ -1,0 +1,6 @@
+version: "3.9"
+
+networks:
+  eodi-frontend-net:
+    name: eodi-frontend-net
+    driver: bridge
