@@ -37,7 +37,17 @@ jobs:
             --parameters '{
               "commands": [
                 "set -e",
-                "cd /opt/eodi/infra/prod/app/compose",
-                "if docker compose ps -q nginx | grep -q .; then docker compose exec nginx nginx -t && docker compose restart nginx; else docker compose up -d nginx; fi"
+                "cd /opt/eodi/infra/prod/app",
+                "",
+                "echo \"[INFO] docker compose services:\"",
+                "docker compose config --services",
+                "",
+                "if docker compose ps nginx | grep -q \"Up\"; then",
+                "  echo \"[INFO] nginx is running. Restarting...\"",
+                "  docker compose restart nginx",
+                "else",
+                "  echo \"[INFO] nginx is not running. Starting...\"",
+                "  docker compose up -d nginx",
+                "fi"
               ]
             }'
