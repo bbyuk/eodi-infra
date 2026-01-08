@@ -69,6 +69,8 @@ jobs:
                 "      git reset --hard origin/main",
                 "    fi",
                 "  fi",
-                "fi"
+                "fi",
+                "echo \"[INFO] Fixing ownership...\"",
+                "chown -R ubuntu:ubuntu /opt/eodi"
               ]
             }'
