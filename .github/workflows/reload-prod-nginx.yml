@@ -37,7 +37,7 @@ jobs:
             --parameters '{
               "commands": [
                 "set -e",
-                "cd /opt/eodi/infra/prod/app",
+                "cd /opt/eodi/infra/prod/app/compose",
                 "",
                 "echo \"[INFO] docker compose services:\"",
                 "docker compose config --services",
