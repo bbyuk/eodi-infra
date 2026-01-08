@@ -39,15 +39,9 @@ jobs:
                 "set -e",
                 "cd /opt/eodi/infra/prod/app/compose",
                 "",
-                "echo \"[INFO] docker compose services:\"",
-                "docker compose config --services",
+                "echo \"[INFO] Reload nginx using docker compose\"",
+                "docker compose -f docker-compose.base.yml -f docker-compose.nginx.yml up -d nginx",
                 "",
-                "if docker compose ps nginx | grep -q \"Up\"; then",
-                "  echo \"[INFO] nginx is running. Restarting...\"",
-                "  docker compose restart nginx",
-                "else",
-                "  echo \"[INFO] nginx is not running. Starting...\"",
-                "  docker compose up -d nginx",
-                "fi"
+                "echo \"[INFO] nginx reload completed\""
               ]
             }'
