@@ -15,6 +15,7 @@ services:
       - "443:443"
     volumes:
       - /opt/eodi/infra/prod/app/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /opt/eodi/infra/prod/app/nginx/conf.d:/etc/nginx/conf.d:ro
       - /opt/eodi/data/certbot/www:/var/www/certbot
       - /opt/eodi/data/letsencrypt:/etc/letsencrypt
     restart: always
