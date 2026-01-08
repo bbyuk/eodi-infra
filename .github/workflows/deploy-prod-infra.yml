@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write # OIDC 필수
+  id-token: write
   contents: read
 
 env:
@@ -37,8 +37,38 @@ jobs:
             --parameters '{
               "commands": [
                 "set -e",
-                "cd /opt/eodi/infra",
-                "git fetch origin",
-                "git reset --hard origin/main"
+                "INFRA_DIR=/opt/eodi/infra",
+                "REPO_URL=https://github.com/bbyuk/eodi-infra.git",
+                "",
+                "echo \"[INFO] Checking infra directory...\"",
+                "",
+                "if [ ! -d \"$INFRA_DIR\" ]; then",
+                "  echo \"[INFO] infra directory not found. Cloning repository...\"",
+                "  mkdir -p /opt/eodi",
+                "  cd /opt/eodi",
+                "  git clone $REPO_URL infra",
+                "else",
+                "  cd $INFRA_DIR",
+                "",
+                "  if [ ! -d .git ]; then",
+                "    echo \"[WARN] infra exists but is not a git repository. Re-cloning...\"",
+                "    cd /opt/eodi",
+                "    rm -rf infra",
+                "    git clone $REPO_URL infra",
+                "  else",
+                "    ORIGIN_URL=$(git remote get-url origin || echo \"\")",
+                "",
+                "    if [ \"$ORIGIN_URL\" != \"$REPO_URL\" ]; then",
+                "      echo \"[WARN] infra git remote mismatch ($ORIGIN_URL). Re-cloning...\"",
+                "      cd /opt/eodi",
+                "      rm -rf infra",
+                "      git clone $REPO_URL infra",
+                "    else",
+                "      echo \"[INFO] infra repository is valid. Updating...\"",
+                "      git fetch origin",
+                "      git reset --hard origin/main",
+                "    fi",
+                "  fi",
+                "fi"
               ]
             }'
