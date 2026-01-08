@@ -1,6 +1,11 @@
 name: Deploy prod Infra Definitions
 
 on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "prod/**"
+
   workflow_dispatch:
 
 permissions:
