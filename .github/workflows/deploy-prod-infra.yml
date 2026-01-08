@@ -1,10 +1,7 @@
 name: Deploy prod Infra Definitions
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - "prod/app/**"
+  workflow_dispatch:
 
 permissions:
   id-token: write # OIDC 필수
