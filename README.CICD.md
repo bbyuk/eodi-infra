@@ -202,6 +202,7 @@ Docker Compose 기반 운영 환경을 자동 배포하는 방법에 대해 작�
 │     └─ app/
 │        └─ compose/
 │           ├─ docker-compose.base.yml
+│           ├─ docker-compose.certbot.yml
 │           ├─ docker-compose.api.yml
 │           ├─ docker-compose.web.yml
 │           └─ docker-compose.nginx.yml
