@@ -12,7 +12,7 @@ services:
       - eodi-frontend-net
     env_file:
       - /opt/eodi/env/api.env
-    restart: always
+    restart: unless-stopped
     mem_limit: 768m
 
 networks:

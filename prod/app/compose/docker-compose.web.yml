@@ -10,9 +10,10 @@ services:
         max-file: "5"
     networks:
       - eodi-frontend-net
-    mem_limit: 256m
     environment:
       - NODE_OPTIONS=--max-old-space-size=256
+    restart: unless-stopped
+    mem_limit: 256m
 
 networks:
   eodi-frontend-net:
