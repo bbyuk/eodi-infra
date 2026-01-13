@@ -31,6 +31,15 @@ loki.source.docker "docker_logs" {
 loki.process "docker_labels" {
   stage.docker {}
 
+  stage.labels {
+    values = {
+      container_name  = "container_name",
+      container_id    = "container_id",
+      image           = "image",
+      compose_service = "compose_service",
+    }
+  }
+
   forward_to = [loki.write.grafana_cloud_loki.receiver]
 }
 
