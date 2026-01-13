@@ -22,28 +22,28 @@ discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
 }
 
-discovery.relabel "docker_log_labels" {
-  targets = []
+discovery.relabel "docker_labels" {
+  targets = discovery.docker.containers.targets
 
   rule {
-    source_labels = ["__meta_docker_container_name"]
-    regex         = "/(.*)"
-    target_label  = "container"
+    source_labels = ["__meta_docker_container_name"],
+    regex         = "/(.*)",
+    target_label  = "container",
   }
 
   rule {
-    source_labels = ["__meta_docker_container_image"]
-    target_label  = "image"
+    source_labels = ["__meta_docker_container_image"],
+    target_label  = "image",
   }
 
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
-    target_label  = "service"
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"],
+    target_label  = "service",
   }
 
   rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
-    target_label  = "project"
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"],
+    target_label  = "project",
   }
 }
 
@@ -53,10 +53,10 @@ loki.source.docker "docker_logs" {
   forward_to = [loki.write.grafana_cloud_loki.receiver]
 
   labels = {
-    job = "docker"
+    job = "docker",
   }
 
-  relabel_rules = discovery.relabel.docker_log_labels.rules
+  relabel_rules = discovery.relabel.docker_labels.rules
 }
 
 prometheus.exporter.unix "node_exporter" {
