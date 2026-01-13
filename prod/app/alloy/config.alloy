@@ -1,8 +1,9 @@
+/*
 ############################################
 # 1. Prometheus Metrics → Grafana Cloud
 # 메트릭 전송
 ############################################
-
+*/
 prometheus.remote_write "metrics_service" {
   endpoint {
     url = "https://prometheus-prod-49-prod-ap-northeast-0.grafana.net/api/prom/push"
@@ -13,10 +14,12 @@ prometheus.remote_write "metrics_service" {
   }
 }
 
+/*
 ############################################
 # 2. Loki Logs → Grafana Cloud
 # 로그 전송
 ############################################
+*/
 loki.write "grafana_cloud_loki" {
   endpoint {
     url = "https://logs-prod-030.grafana.net/loki/api/v1/push"
@@ -27,11 +30,12 @@ loki.write "grafana_cloud_loki" {
   }
 }
 
-
+/*
 ############################################
 # 3. Docker container logs
 # Docker container 로그 자동 수집
 ############################################
+*/
 loki.source.docker "docker_logs" {
   host       = "unix:///var/run/docker.sock"
   forward_to = [loki.write.grafana_cloud_loki.receiver]
@@ -41,10 +45,12 @@ loki.source.docker "docker_logs" {
   }
 }
 
+/*
 ############################################
 # 4. EC2 Host Metrics (Node Exporter)
 # EC2 호스트 상태 메트릭 수집
 ############################################
+*/
 prometheus.exporter.unix "node_exporter" {
   disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
 }
@@ -54,9 +60,11 @@ prometheus.scrape "node_exporter" {
   forward_to = [prometheus.remote_write.metrics_service.receiver]
 }
 
+/*
 ############################################
 # 5. 시스템 로그 – Optional
 ############################################
+*/
 loki.source.file "system_logs" {
   targets = [
     {
