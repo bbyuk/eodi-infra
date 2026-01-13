@@ -8,6 +8,10 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro # 실제로그파일 읽기용
     # 소켓과 로그 파일을 읽기 위한 root 권한
     user: root
-    command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
     env_file:
       - /opt/eodi/env/alloy.env
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
