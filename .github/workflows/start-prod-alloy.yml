@@ -12,7 +12,7 @@ env:
   AWS_IAM_ROLE: arn:aws:iam::265507129563:role/role-github-actions-eodi
 
 jobs:
-  reload-prod-nginx:
+  start-prod-alloy:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
           role-to-assume: ${{ env.AWS_IAM_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Reload nginx docker compose
+      - name: Start alloy docker compose
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
