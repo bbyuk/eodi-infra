@@ -13,12 +13,15 @@ prometheus.remote_write "metrics_service" {
 loki.write "grafana_cloud_loki" {
   endpoint {
     url = "https://logs-prod-030.grafana.net/loki/api/v1/push"
-    // 메모리 절약을 위해 배치 사이즈 조절 (0.5MB)
-    batch_size = 524288
+
     basic_auth {
       username = sys.env("LOKI_USER")
       password = sys.env("GRAFANA_API_KEY")
     }
+
+    // 1. endpoint 블록 안에서 쓸 때는 'batch_max_size'라는 명칭을 사용하며,
+    // 2. 반드시 '512KiB'나 '1MB' 같은 단위를 붙여야 함
+    batch_max_size = "512KiB"
   }
 }
 
