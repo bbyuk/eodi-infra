@@ -18,8 +18,13 @@ loki.write "grafana_cloud_loki" {
   }
 }
 
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
 loki.source.docker "docker_logs" {
   host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.containers.targets
   forward_to = [loki.write.grafana_cloud_loki.receiver]
 
   labels = {
