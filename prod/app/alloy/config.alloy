@@ -59,19 +59,3 @@ prometheus.scrape "node_exporter" {
   targets    = prometheus.exporter.unix.node_exporter.targets
   forward_to = [prometheus.remote_write.metrics_service.receiver]
 }
-
-/*
-############################################
-# 5. 시스템 로그 – Optional
-############################################
-*/
-loki.source.file "system_logs" {
-  targets = [
-    {
-      "__path__" = "/var/log/{syslog,messages,*.log}"
-      job        = "system"
-      instance   = "ec2"
-    },
-  ]
-  forward_to = [loki.write.grafana_cloud_loki.receiver]
-}
