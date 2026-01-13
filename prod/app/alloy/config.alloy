@@ -18,10 +18,6 @@ loki.write "grafana_cloud_loki" {
       username = sys.env("LOKI_USER")
       password = sys.env("GRAFANA_API_KEY")
     }
-
-    // 1. endpoint 블록 안에서 쓸 때는 'batch_max_size'라는 명칭을 사용하며,
-    // 2. 반드시 '512KiB'나 '1MB' 같은 단위를 붙여야 함
-    max_batch_size = "512KiB"
   }
 }
 
