@@ -32,7 +32,7 @@ loki.source.docker "docker_logs" {
   forward_to = [loki.write.grafana_cloud_loki.receiver]
 
   // 1. 컨테이너 이름을 태그로 변환 (기본)
-  relabel_rules {
+  rule {
     source_labels = ["__meta_docker_container_name"]
     regex         = "/(.*)"
     target_label  = "container_name"
@@ -40,7 +40,7 @@ loki.source.docker "docker_logs" {
 
   // 2. docker-compose.yml에 정의된 서비스 명칭을 그대로 가져온다.
   /*
-  relabel_rules {
+  rule {
     source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
     target_label  = "service_name"
   }
