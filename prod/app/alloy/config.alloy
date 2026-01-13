@@ -25,12 +25,15 @@ discovery.docker "containers" {
 loki.source.docker "docker_logs" {
   host       = "unix:///var/run/docker.sock"
   targets    = discovery.docker.containers.targets
-  forward_to = [loki.write.grafana_cloud_loki.receiver]
-
-  labels = {
-    job = "docker",
-  }
+  forward_to = [loki.process.docker_labels.receiver]
 }
+
+loki.process "docker_labels" {
+  stage.docker {}
+
+  forward_to = [loki.write.grafana_cloud_loki.receiver]
+}
+
 
 prometheus.exporter.unix "node_exporter" {
   disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
