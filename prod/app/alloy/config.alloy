@@ -1,0 +1,52 @@
+// --- 1. 메트릭 전송 (Prometheus) ---
+prometheus.remote_write "metrics_service" {
+  endpoint {
+    url = "https://prometheus-prod-49-prod-ap-northeast-0.grafana.net/api/prom/push"
+    basic_auth {
+      username = sys.env("PROM_USER")
+      password = sys.env("GRAFANA_API_KEY")
+    }
+  }
+}
+
+// --- 2. 로그 전송 (Loki) ---
+loki.write "grafana_cloud_loki" {
+  endpoint {
+    url = "https://logs-prod-030.grafana.net/loki/api/v1/push"
+    // 메모리 절약을 위해 배치 사이즈 조절 (0.5MB)
+    batch_size = 524288
+    basic_auth {
+      username = sys.env("LOKI_USER")
+      password = sys.env("GRAFANA_API_KEY")
+    }
+  }
+}
+
+// --- 3. Docker 컨테이너 로그 자동 수집 ---
+discovery.docker "linux_containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+loki.source.docker "docker_logs" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.linux_containers.targets
+  forward_to = [loki.write.grafana_cloud_loki.receiver]
+}
+
+// --- 4. EC2 호스트 상태 메트릭 수집 (Node Exporter) ---
+prometheus.exporter.unix "node_exporter" {
+  disable_collectors = ["ipvs", "btrfs", "infiniband", "xfs", "zfs"]
+}
+
+prometheus.scrape "node_exporter" {
+  targets    = prometheus.exporter.unix.node_exporter.targets
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+// --- 5. 시스템 로그 (선택사항, 불필요시 삭제 가능) ---
+loki.source.file "system_logs" {
+  targets = [
+    { "__path__" = "/var/log/{syslog,messages,*.log}", "job" = "integrations/node_exporter", "instance" = "ec2-instance" },
+  ]
+  forward_to = [loki.write.grafana_cloud_loki.receiver]
+}

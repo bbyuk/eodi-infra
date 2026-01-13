@@ -1,0 +1,13 @@
+services:
+  alloy:
+    image: grafana/alloy:latest
+    restart: unless-stopped
+    volumes:
+      - /opt/eodi/infra/prod/app/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # 컨테이너 목록 확인용
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro # 실제로그파일 읽기용
+    # 소켓과 로그 파일을 읽기 위한 root 권한
+    user: root
+    command: run --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    env_file:
+      - /opt/eodi/env/alloy.env
