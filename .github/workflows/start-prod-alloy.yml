@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: ap-northeast-2
-  AWS_IAM_ROLE: arn:aws:iam::265507129563:role/role-github-actions-eodi
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_IAM_ROLE: ${{ secrets.AWS_IAM_ROLE }}
 
 jobs:
   start-prod-alloy:
