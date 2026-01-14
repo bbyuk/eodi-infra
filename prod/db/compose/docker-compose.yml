@@ -19,5 +19,6 @@ services:
     volumes:
       - /data/mysql:/var/lib/mysql
       - /opt/eodi/mysql:/opt/eodi/mysql:ro
+      - /opt/eodi/infra/prod/db/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf:ro
     restart: always
-    mem_limit: 1g
+    mem_limit: 1500m
