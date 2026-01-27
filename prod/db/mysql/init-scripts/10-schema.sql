@@ -13,7 +13,6 @@ SOURCE /opt/eodi/mysql/schema/deal/real_estate_sell.sql;
 
 -- legal_dong
 SOURCE /opt/eodi/mysql/schema/legal_dong/legal_dong.sql;
-SOURCE /opt/eodi/mysql/schema/legal_dong/legal_dong_adjacency.sql;
 
 -- spring_batch
 SOURCE /opt/eodi/mysql/schema/spring_batch/schema-mysql.sql;
