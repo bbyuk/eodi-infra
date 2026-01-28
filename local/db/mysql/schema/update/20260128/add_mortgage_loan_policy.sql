@@ -22,7 +22,7 @@ CREATE TABLE mortgage_loan_policy
 -- -----------------------------------------------------------------------------------------
 -- index
 
----
+--
 
 DROP TABLE IF EXISTS mortgage_loan_policy_region;
 
